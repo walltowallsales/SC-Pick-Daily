@@ -1,0 +1,16 @@
+{
+  "name": "sellerchamp-pick-batch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frozen SellerChamp pick batches with printable pick list and dynamic pick guide",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

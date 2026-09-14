@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: sellerchamp-pick-batch
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: SELLERCHAMP_BASE_URL
+        value: https://app.sellerchamp.com
+      - key: QUALIFYING_ORDER_STATUS
+        value: unshipped
+      - key: DATA_DIR
+        value: /var/data
+      - key: SELLERCHAMP_TOKEN
+        sync: false
+      - key: APP_PIN
+        sync: false
+    disk:
+      name: pick-batch-data
+      mountPath: /var/data
+      sizeGB: 1

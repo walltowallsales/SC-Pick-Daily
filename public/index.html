@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SellerChamp Pick Batches</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header><div><h1>Pick Batches</h1><p>Frozen SellerChamp picking sessions</p></div><button id="homeBtn" class="ghost hidden">Home</button></header>
+<main>
+<section id="pinView" class="card hidden"><h2>Enter PIN</h2><input id="pinInput" inputmode="numeric" type="password" placeholder="PIN"><button id="pinBtn">Unlock</button><p id="pinErr" class="error"></p></section>
+<section id="homeView">
+  <div class="card hero">
+    <div><h2>Create Pick Batch</h2><p>Captures the qualifying orders <strong>right now</strong>. Later orders will not be added.</p></div>
+    <div id="preview" class="preview">Checking SellerChamp…</div>
+    <button id="createBtn" class="primary" disabled>Create Pick Batch</button>
+    <p id="homeError" class="error"></p>
+  </div>
+  <h2>Saved Pick Batches</h2><div id="batchList" class="batchList"></div>
+</section>
+<section id="batchView" class="hidden">
+  <div id="batchHead" class="card"></div>
+  <div class="actions"><button id="startBtn" class="primary">Open Dynamic Pick Guide</button><button id="printBtn">Print Pick List</button><button id="deleteBtn" class="danger ghost">Delete Batch</button></div>
+  <div id="lineTableWrap" class="card tableWrap"></div>
+</section>
+<section id="pickerView" class="hidden">
+  <div class="pickerTop"><div id="progressText"></div><div class="progress"><span id="progressBar"></span></div></div>
+  <div class="pickCard">
+    <div id="pickLocation" class="location"></div>
+    <div class="qtyRow"><span>Quantity to Pick</span><strong id="pickQty"></strong></div>
+    <label id="multiConfirm" class="confirm hidden"><input id="confirmQty" type="checkbox"> <span id="confirmLabel">I picked the full quantity</span></label>
+    <div id="orderBox" class="orders"></div>
+    <div class="imageBox"><img id="pickImage" alt="Item photo"><div id="noImage">No image available</div></div>
+    <h2 id="pickTitle"></h2>
+    <div class="facts"><div><span>SKU</span><strong id="pickSku"></strong></div><div><span>Condition</span><strong id="pickCondition"></strong></div><div><span>Qty on hand</span><strong id="pickOnHand"></strong></div></div>
+    <div id="pickError" class="alert hidden">Did you pick the full quantity?</div>
+  </div>
+  <div class="pickerNav"><button id="backBtn">← Back</button><button id="nextBtn" class="primary">Next →</button></div>
+</section>
+</main>
+<script src="/app.js"></script>
+</body></html>
