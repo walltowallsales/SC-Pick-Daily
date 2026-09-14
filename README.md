@@ -51,3 +51,6 @@ Then open `http://localhost:3000`.
 ## Qualifying-order note
 
 The default is SellerChamp `unshipped`. If your exact shipping-label workflow changes SellerChamp order status before you press **Create Pick Batch**, change `QUALIFYING_ORDER_STATUS` to the status that represents the orders you want captured, or adjust `fetchAllQualifyingOrders()` in `server.js`.
+
+## Inventory correction during picking
+If the quantity on hand at the current location is wrong, tap **Quantity is incorrect**, enter the actual count, and tap **Update SellerChamp**. The app updates that SellerChamp inventory location when a location ID is available, otherwise it safely falls back to the matching variant or product. The correction is logged in the saved pick batch and the corrected quantity is marked verified.

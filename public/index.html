@@ -28,13 +28,14 @@
   <div class="pickCard">
     <div id="pickLocation" class="location"></div>
     <div class="qtyRow"><span>Quantity to Pick</span><strong id="pickQty"></strong></div>
-    <div id="orderBox" class="orders"></div>
+    <div class="skuProminent"><span>SKU</span><strong id="pickSku"></strong></div>
     <div class="imageBox"><img id="pickImage" alt="Item photo"><div id="noImage">No image available</div></div>
     <h2 id="pickTitle"></h2>
-    <div class="facts"><div><span>SKU</span><strong id="pickSku"></strong></div><div><span>Condition</span><strong id="pickCondition"></strong></div><div><span>Qty on hand</span><strong id="pickOnHand"></strong></div></div>
+    <div id="orderBox" class="orders spreadOrders"></div>
+    <div class="facts"><div><span>Condition</span><strong id="pickCondition"></strong></div><div class="onHandFact"><span>Qty on hand at this location</span><strong id="pickOnHand"></strong><label class="inlineVerify"><input id="confirmOnHand" type="checkbox"> <span id="onHandLabel">Verified</span></label><button id="correctQtyBtn" class="qtyWrong ghost" type="button">Quantity is incorrect</button><div id="correctionPanel" class="correctionPanel hidden"><label for="actualQty">Actual quantity on hand</label><div class="correctionRow"><input id="actualQty" inputmode="numeric" type="number" min="0" step="1"><button id="updateQtyBtn" class="primary" type="button">Update SellerChamp</button></div><div id="correctionMsg" class="correctionMsg"></div></div></div></div>
   </div>
   <label id="multiConfirm" class="confirm bottomConfirm hidden"><input id="confirmQty" type="checkbox"> <span id="confirmLabel">I picked the full quantity</span></label>
-  <div id="pickError" class="alert hidden">Did you pick the full quantity?</div>
+  <div id="pickError" class="alert hidden"></div>
   <div class="pickerNav"><button id="backBtn">← Back</button><button id="nextBtn" class="primary">Next →</button></div>
 </section>
 </main>

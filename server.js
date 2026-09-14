@@ -55,6 +55,21 @@ async function scGet(endpoint, params={}) {
   return body;
 }
 
+async function scWrite(method, endpoint, payload) {
+  if (!TOKEN) throw new Error('SELLERCHAMP_TOKEN is not configured.');
+  const url = new URL(BASE + endpoint);
+  const r = await fetch(url, {
+    method,
+    headers: { Token: TOKEN, Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload || {})
+  });
+  const text = await r.text();
+  let body;
+  try { body = text ? JSON.parse(text) : {}; } catch { body = { raw: text }; }
+  if (!r.ok) throw new Error(`SellerChamp ${r.status}: ${body.error || body.errors || body.message || text || r.statusText}`);
+  return body;
+}
+
 function orderTimestamp(order) {
   const candidates = [order?.order_date, order?.created_at, order?.ordered_at, order?.purchase_date, order?.date_created];
   for (const value of candidates) {
@@ -127,11 +142,11 @@ function productFacts(product, item) {
   const rawLocations = variant?.inventory_locations?.length ? variant.inventory_locations : product?.inventory_locations || [];
   for (const l of rawLocations) {
     if (!l) continue;
-    locations.push({ location: str(l.location || l.name || 'Unassigned').trim() || 'Unassigned', quantity_available: n(l.quantity_available), priority: n(l.priority, 999999) });
+    locations.push({ id: str(l.id), location: str(l.location || l.name || 'Unassigned').trim() || 'Unassigned', quantity_available: n(l.quantity_available), priority: n(l.priority, 999999), delete_if_empty: l.delete_if_empty !== false });
   }
   if (!locations.length) {
     const loc = str(item.warehouse_location || variant?.item_location || product?.item_location || product?.bin_location || 'Unassigned').trim() || 'Unassigned';
-    locations.push({ location: loc, quantity_available: n(variant?.quantity_available ?? product?.quantity_available), priority: 1 });
+    locations.push({ id: '', location: loc, quantity_available: n(variant?.quantity_available ?? product?.quantity_available), priority: 1, delete_if_empty: false });
   }
   locations.sort((a,b) => (a.priority-b.priority) || naturalCompare(a.location,b.location));
   return {
@@ -140,6 +155,8 @@ function productFacts(product, item) {
     condition: str(product?.item_condition || product?.ebay_condition_name || 'Unknown'),
     qtyOnHand: n(variant?.quantity_available ?? product?.quantity_available),
     image: firstImage(product, effectiveSku),
+    productId: str(product?.id),
+    variantId: str(variant?.id),
     locations
   };
 }
@@ -152,7 +169,7 @@ function allocateOrdersToLocations(orderBreakdown, locations) {
   const stops = [];
   function getStop(loc) {
     let s = stops.find(x=>x.location===loc.location);
-    if (!s) { s = { location: loc.location, quantity:0, orderBreakdown:[] }; stops.push(s); }
+    if (!s) { s = { location: loc.location, inventoryLocationId: str(loc.id), locationQuantityOnHand: n(loc.quantity_available), locationPriority: n(loc.priority, 999999), deleteIfEmpty: loc.delete_if_empty !== false, quantity:0, orderBreakdown:[] }; stops.push(s); }
     return s;
   }
   for (const ob of orderBreakdown) {
@@ -170,7 +187,7 @@ function allocateOrdersToLocations(orderBreakdown, locations) {
       if (Number.isFinite(loc.remaining)) loc.remaining -= take;
     }
   }
-  if (!stops.length && totalNeeded) stops.push({location: locations[0]?.location || 'Unassigned', quantity:totalNeeded, orderBreakdown});
+  if (!stops.length && totalNeeded) { const loc=locations[0]||{}; stops.push({location:loc.location||'Unassigned', inventoryLocationId:str(loc.id), locationQuantityOnHand:n(loc.quantity_available), locationPriority:n(loc.priority,999999), deleteIfEmpty:loc.delete_if_empty!==false, quantity:totalNeeded, orderBreakdown}); }
   return stops;
 }
 
@@ -196,10 +213,18 @@ async function buildSnapshot(orders) {
     for (const stop of stops) {
       lines.push({
         id: uid(), sku: facts.sku, title: facts.title, condition: facts.condition,
-        image: facts.image, quantityOnHand: facts.qtyOnHand,
+        image: facts.image,
+        quantityOnHand: stop.locationQuantityOnHand,
+        productQuantityOnHand: facts.qtyOnHand,
+        productId: facts.productId,
+        variantId: facts.variantId,
+        inventoryLocationId: stop.inventoryLocationId,
+        inventoryLocationPriority: stop.locationPriority,
+        inventoryLocationDeleteIfEmpty: stop.deleteIfEmpty,
         location: stop.location, quantityToPick: stop.quantity,
         orders: stop.orderBreakdown,
-        picked: false, pickedAt: null
+        picked: false, pickedAt: null, onHandVerified: false,
+        inventoryCorrections: []
       });
     }
   }
@@ -273,9 +298,62 @@ app.patch('/api/batches/:id/lines/:lineId', (req,res)=> {
   if(!b) return res.status(404).json({error:'Batch not found'});
   const line=b.lines.find(x=>x.id===req.params.lineId); if(!line) return res.status(404).json({error:'Line not found'});
   if (typeof req.body?.picked === 'boolean') { line.picked=req.body.picked; line.pickedAt=line.picked?nowIso():null; }
+  if (typeof req.body?.onHandVerified === 'boolean') line.onHandVerified=req.body.onHandVerified;
   if (b.lines.every(x=>x.picked)) b.status='completed'; else if (b.lines.some(x=>x.picked)) b.status='in_progress';
   writeDb(db); res.json({line,batch:summarize(b)});
 });
+app.post('/api/batches/:id/lines/:lineId/correct-inventory', async (req,res)=> {
+  try {
+    const actual = Number(req.body?.quantity);
+    if (!Number.isInteger(actual) || actual < 0) return res.status(400).json({ error:'Enter a whole-number quantity of 0 or greater.' });
+    const db=readDb(); const b=db.batches.find(x=>x.id===req.params.id);
+    if(!b) return res.status(404).json({error:'Batch not found'});
+    const line=b.lines.find(x=>x.id===req.params.lineId); if(!line) return res.status(404).json({error:'Line not found'});
+
+    let productId=str(line.productId), variantId=str(line.variantId), inventoryLocationId=str(line.inventoryLocationId);
+    let locationPriority=n(line.inventoryLocationPriority, 1);
+    let deleteIfEmpty=line.inventoryLocationDeleteIfEmpty !== false;
+
+    // Backward compatibility for batches created before inventory write-back was added.
+    if (!productId) {
+      const body=await scGet('/api/products', { sku: line.sku, page:1, page_size:50 });
+      const products=(body.products||[]).filter(p => p && (p.sku===line.sku || (p.variants||[]).some(v=>v.sku===line.sku)));
+      if (products.length !== 1) throw new Error(`Could not safely identify one SellerChamp product for SKU ${line.sku}. Create a new pick batch before correcting this SKU.`);
+      const product=products[0]; productId=str(product.id);
+      const variant=(product.variants||[]).find(v=>v.sku===line.sku); variantId=str(variant?.id);
+      const rawLocations=variant?.inventory_locations?.length ? variant.inventory_locations : product.inventory_locations || [];
+      const loc=rawLocations.find(x=>str(x.location||x.name).trim()===str(line.location).trim());
+      if (loc) { inventoryLocationId=str(loc.id); locationPriority=n(loc.priority,1); deleteIfEmpty=loc.delete_if_empty!==false; }
+      line.productId=productId; line.variantId=variantId; line.inventoryLocationId=inventoryLocationId;
+      line.inventoryLocationPriority=locationPriority; line.inventoryLocationDeleteIfEmpty=deleteIfEmpty;
+    }
+
+    const before=n(line.quantityOnHand);
+    let updateMode='product';
+    if (inventoryLocationId) {
+      await scWrite('PUT', `/api/products/${encodeURIComponent(productId)}/inventory_locations/${encodeURIComponent(inventoryLocationId)}`, {
+        inventory_location: { location: line.location, quantity_available: actual, delete_if_empty: deleteIfEmpty, priority: locationPriority }
+      });
+      updateMode='location';
+    } else if (variantId) {
+      await scWrite('PUT', `/api/variants/${encodeURIComponent(variantId)}`, { variant: { quantity_available: actual } });
+      updateMode='variant';
+    } else if (productId) {
+      await scWrite('PUT', `/api/products/${encodeURIComponent(productId)}`, { product: { quantity_available: actual } });
+      updateMode='product';
+    } else {
+      throw new Error('SellerChamp product information is missing for this pick stop.');
+    }
+
+    line.quantityOnHand=actual;
+    line.onHandVerified=true;
+    line.inventoryCorrections=Array.isArray(line.inventoryCorrections)?line.inventoryCorrections:[];
+    line.inventoryCorrections.push({ from:before, to:actual, at:nowIso(), mode:updateMode });
+    writeDb(db);
+    res.json({ ok:true, line, updateMode, message:`SellerChamp quantity updated from ${before} to ${actual}.` });
+  } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
 app.delete('/api/batches/:id', (req,res)=> {
   const deletePin = str(req.header('x-delete-pin') || req.body?.pin).trim();
   if (deletePin !== DELETE_BATCH_PIN) return res.status(403).json({ error:'Incorrect delete PIN.' });
