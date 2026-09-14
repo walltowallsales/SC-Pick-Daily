@@ -157,6 +157,9 @@ function productFacts(product, item) {
     image: firstImage(product, effectiveSku),
     productId: str(product?.id),
     variantId: str(variant?.id),
+    marketplaceUrl: str(product?.marketplace_url || product?.url || ''),
+    marketplaceId: str(product?.marketplace_id || product?.ebay_item_id || ''),
+    sellerChampUrl: product?.id ? `https://app.sellerchamp.com/products/${encodeURIComponent(product.id)}` : '',
     locations
   };
 }
@@ -218,6 +221,8 @@ async function buildSnapshot(orders) {
         productQuantityOnHand: facts.qtyOnHand,
         productId: facts.productId,
         variantId: facts.variantId,
+        ebayListingUrl: facts.marketplaceUrl || (facts.marketplaceId ? `https://www.ebay.com/itm/${encodeURIComponent(facts.marketplaceId)}` : ''),
+        sellerChampProductUrl: facts.sellerChampUrl,
         inventoryLocationId: stop.inventoryLocationId,
         inventoryLocationPriority: stop.locationPriority,
         inventoryLocationDeleteIfEmpty: stop.deleteIfEmpty,

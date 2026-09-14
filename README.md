@@ -54,3 +54,5 @@ The default is SellerChamp `unshipped`. If your exact shipping-label workflow ch
 
 ## Inventory correction during picking
 If the quantity on hand at the current location is wrong, tap **Quantity is incorrect**, enter the actual count, and tap **Update SellerChamp**. The app updates that SellerChamp inventory location when a location ID is available, otherwise it safely falls back to the matching variant or product. The correction is logged in the saved pick batch and the corrected quantity is marked verified.
+
+- Adds secondary buttons below Back/Next to open the eBay listing when SellerChamp provides a marketplace URL/ID and to open the SellerChamp product page. Extra spacing separates them from the picking navigation.
