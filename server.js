@@ -152,7 +152,29 @@ function productFacts(product, item) {
   return {
     sku: effectiveSku || str(item.sku),
     title: str(item.title || variant?.title || product?.title || effectiveSku || 'Untitled item'),
-    condition: str(product?.item_condition || product?.ebay_condition_name || 'Unknown'),
+    condition: (() => {
+      const ebayCondition = str(
+        product?.ebay_condition_name ||
+        product?.ebay_condition ||
+        variant?.ebay_condition_name ||
+        variant?.ebay_condition ||
+        item?.ebay_condition_name ||
+        item?.ebay_condition ||
+        product?.item_condition ||
+        'Unknown'
+      ).trim() || 'Unknown';
+      const remarks = str(
+        product?.item_remarks_description ||
+        variant?.item_remarks_description ||
+        item?.item_remarks_description ||
+        product?.remarks_description ||
+        variant?.remarks_description ||
+        item?.remarks_description ||
+        product?.item_remarks ||
+        ''
+      ).trim();
+      return remarks ? `${ebayCondition} - ${remarks}` : ebayCondition;
+    })(),
     qtyOnHand: n(variant?.quantity_available ?? product?.quantity_available),
     image: firstImage(product, effectiveSku),
     productId: str(product?.id),

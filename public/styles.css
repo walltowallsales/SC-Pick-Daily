@@ -12,3 +12,7 @@
 .externalBtn{display:block;text-align:center;text-decoration:none;font:inherit;font-weight:750;border:1px solid #cbd5e1;background:#fff;color:#172033;border-radius:11px;padding:12px 14px}
 .externalBtn:active{transform:translateY(1px)}
 @media(max-width:600px){.externalLinks{margin-top:56px;grid-template-columns:1fr;gap:12px}}
+
+.qtyAdjust{margin-top:12px;width:100%;padding:11px 14px;font-size:14px;font-weight:850;background:#172033;color:#fff;border:2px solid #172033;border-radius:10px;box-shadow:0 2px 5px #00000020}
+.qtyAdjust:hover{background:#26364e;border-color:#26364e}
+.qtyAdjust:active{transform:translateY(1px)}
