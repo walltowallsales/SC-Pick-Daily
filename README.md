@@ -4,7 +4,7 @@ A web app that creates a frozen snapshot of current SellerChamp orders, generate
 
 ## What it does
 
-- Pulls SellerChamp orders with `order_status=unshipped`.
+- Pulls SellerChamp orders with `order_status=unshipped` and only includes orders from the last 30 days.
 - Keeps paid, seller-fulfilled, non-hold orders.
 - Excludes any order already stored in an existing pick batch.
 - **Create Pick Batch** freezes the exact qualifying orders at that moment.
@@ -14,7 +14,8 @@ A web app that creates a frozen snapshot of current SellerChamp orders, generate
 - Sorts pick stops naturally by location.
 - Printable portrait pick list: Location, Qty, Image, SKU, Title, Condition, On Hand, Order(s).
 - Dynamic guide with Back / Next, progress tracking, and persistent completion state.
-- When quantity to pick is greater than 1, the employee must check **I picked all N** before Next. Otherwise the app displays **Did you pick the full quantity?**
+- When quantity to pick is greater than 1, the employee must check **I picked all N** at the bottom of the page, directly above Next. Otherwise the app displays **Did you pick the full quantity?**
+- Deleting a batch requires the delete PIN. Default: `8880`.
 
 ## Important workflow
 
@@ -28,13 +29,15 @@ This package includes `render.yaml`.
 2. In Render, create a new Blueprint from that repository (or a Web Service using `npm install` / `npm start`).
 3. Set `SELLERCHAMP_TOKEN` to your SellerChamp API token.
 4. Optionally set `APP_PIN`.
+5. `ORDER_LOOKBACK_DAYS` defaults to `30`.
+6. `DELETE_BATCH_PIN` defaults to `8880`.
 5. The included Blueprint mounts a 1 GB persistent disk at `/var/data` and sets `DATA_DIR=/var/data`. **Keep the persistent disk** so frozen pick batches survive Render restarts/deploys.
 
 If you create a Web Service manually instead of the Blueprint:
 - Runtime: Node
 - Build Command: `npm install`
 - Start Command: `npm start`
-- Environment: `SELLERCHAMP_TOKEN`, `SELLERCHAMP_BASE_URL=https://app.sellerchamp.com`, `QUALIFYING_ORDER_STATUS=unshipped`, `DATA_DIR=/var/data`
+- Environment: `SELLERCHAMP_TOKEN`, `SELLERCHAMP_BASE_URL=https://app.sellerchamp.com`, `QUALIFYING_ORDER_STATUS=unshipped`, `ORDER_LOOKBACK_DAYS=30`, `DELETE_BATCH_PIN=8880`, `DATA_DIR=/var/data`
 - Persistent disk mount: `/var/data`
 
 ## Local testing

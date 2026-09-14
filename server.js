@@ -12,6 +12,8 @@ const BASE = (process.env.SELLERCHAMP_BASE_URL || 'https://app.sellerchamp.com')
 const TOKEN = process.env.SELLERCHAMP_TOKEN || '';
 const ORDER_STATUS = process.env.QUALIFYING_ORDER_STATUS || 'unshipped';
 const APP_PIN = process.env.APP_PIN || '';
+const DELETE_BATCH_PIN = process.env.DELETE_BATCH_PIN || '8880';
+const ORDER_LOOKBACK_DAYS = Math.max(1, Number(process.env.ORDER_LOOKBACK_DAYS || 30));
 const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(__dirname, 'data'));
 const DB_FILE = path.join(DATA_DIR, 'pick-batches.json');
 
@@ -53,20 +55,35 @@ async function scGet(endpoint, params={}) {
   return body;
 }
 
+function orderTimestamp(order) {
+  const candidates = [order?.order_date, order?.created_at, order?.ordered_at, order?.purchase_date, order?.date_created];
+  for (const value of candidates) {
+    if (!value) continue;
+    const t = new Date(value).getTime();
+    if (Number.isFinite(t)) return t;
+  }
+  return null;
+}
+
 async function fetchAllQualifyingOrders() {
   const all = [];
   let page = 1;
   const pageSize = 250;
   while (true) {
-    const body = await scGet('/api/orders', { order_status: ORDER_STATUS, page, page_size: pageSize, sort: 'created_at', direction: 'ASC' });
+    const body = await scGet('/api/orders', { order_status: ORDER_STATUS, page, page_size: pageSize, sort: 'created_at', direction: 'DESC' });
     const rows = Array.isArray(body.orders) ? body.orders : [];
     all.push(...rows);
     if (rows.length < pageSize) break;
     page += 1;
     if (page > 100) throw new Error('Stopped after 100 order pages for safety.');
   }
-  // Only paid seller-fulfilled orders are pickable by default.
-  return all.filter(o => o && o.paid !== false && !o.on_hold && String(o.fulfilled_by || 'seller').toLowerCase() !== 'marketplace');
+  const cutoff = Date.now() - ORDER_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+  // Only recent, paid, seller-fulfilled, non-hold orders are pickable by default.
+  return all.filter(o => {
+    if (!o || o.paid === false || o.on_hold || String(o.fulfilled_by || 'seller').toLowerCase() === 'marketplace') return false;
+    const ts = orderTimestamp(o);
+    return ts !== null && ts >= cutoff;
+  });
 }
 
 const productCache = new Map();
@@ -201,7 +218,7 @@ function summarize(batch) {
   };
 }
 
-app.get('/api/health', (req,res)=>res.json({ ok:true, sellerChampConfigured:!!TOKEN, storage:DB_FILE, orderStatus:ORDER_STATUS }));
+app.get('/api/health', (req,res)=>res.json({ ok:true, sellerChampConfigured:!!TOKEN, storage:DB_FILE, orderStatus:ORDER_STATUS, orderLookbackDays:ORDER_LOOKBACK_DAYS }));
 
 app.get('/api/preview', async (req,res) => {
   try {
@@ -260,6 +277,8 @@ app.patch('/api/batches/:id/lines/:lineId', (req,res)=> {
   writeDb(db); res.json({line,batch:summarize(b)});
 });
 app.delete('/api/batches/:id', (req,res)=> {
+  const deletePin = str(req.header('x-delete-pin') || req.body?.pin).trim();
+  if (deletePin !== DELETE_BATCH_PIN) return res.status(403).json({ error:'Incorrect delete PIN.' });
   const db=readDb(); const idx=db.batches.findIndex(x=>x.id===req.params.id);
   if(idx<0) return res.status(404).json({error:'Batch not found'});
   db.batches.splice(idx,1); writeDb(db); res.json({ok:true});

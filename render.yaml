@@ -10,6 +10,10 @@ services:
         value: https://app.sellerchamp.com
       - key: QUALIFYING_ORDER_STATUS
         value: unshipped
+      - key: ORDER_LOOKBACK_DAYS
+        value: 30
+      - key: DELETE_BATCH_PIN
+        value: 8880
       - key: DATA_DIR
         value: /var/data
       - key: SELLERCHAMP_TOKEN
