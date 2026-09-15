@@ -39,3 +39,34 @@
 @media(max-width:600px){}
 
 #pickTitle{border-top:10px solid #172033;margin-top:26px;padding-top:20px;font-size:1.12em}
+
+/* v19: larger, fully tappable QTY LEFT verification target */
+#onHandVerifyWrap{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  min-height:54px;
+  margin-top:10px;
+  padding:11px 14px;
+  border:2px solid #cbd5e1;
+  border-radius:11px;
+  background:#fff;
+  font-size:16px;
+  font-weight:850;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+#onHandVerifyWrap input{
+  width:30px;
+  height:30px;
+  min-width:30px;
+  margin:0;
+  cursor:pointer;
+}
+#onHandVerifyWrap:has(input:checked){
+  border-color:#1769e0;
+  background:#eef6ff;
+}
+#onHandVerifyWrap span{cursor:pointer}

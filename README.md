@@ -74,3 +74,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v17: Corrects the SellerChamp Products button to use app2.sellerchamp.com and SellerChamp's actual `product[query]` search parameter, populated with the current SKU.
 
 - v18: Fixes Create Pick Batch `sku is not defined` regression by using the in-scope `effectiveSku`. Also uses the user's exact working SellerChamp Products search URL structure and substitutes only the current SKU.
+
+- v19: Makes the QTY LEFT VERIFIED control a large touch target. The entire bordered VERIFIED area is tappable, with a 30px checkbox and selected-state highlight.
