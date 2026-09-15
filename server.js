@@ -181,7 +181,7 @@ function productFacts(product, item) {
     variantId: str(variant?.id),
     marketplaceUrl: str(product?.marketplace_url || product?.url || ''),
     marketplaceId: str(product?.marketplace_id || product?.ebay_item_id || ''),
-    sellerChampUrl: sku ? `https://app.sellerchamp.com/products?search=${encodeURIComponent(sku)}` : 'https://app.sellerchamp.com/products',
+    sellerChampUrl: sku ? `https://app2.sellerchamp.com/products?utf8=%E2%9C%93&listings_filter=all&product%5Bmarketplace_manually_removed%5D=false&product%5Bquery%5D=${encodeURIComponent(sku)}&product%5Bitem_condition%5D=all&per_page=50` : 'https://app2.sellerchamp.com/products',
     locations
   };
 }

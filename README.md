@@ -70,3 +70,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v15: Makes the location larger, strengthens the divider between photo and title, and changes Open SellerChamp Product to open the SellerChamp Products section searched by the current SKU instead of opening the product-info detail URL.
 
 - v16: Changes the base location font from 34px to 46px and sets the photo/title divider explicitly to 10px, removing conflicting later overrides.
+
+- v17: Corrects the SellerChamp Products button to use app2.sellerchamp.com and SellerChamp's actual `product[query]` search parameter, populated with the current SKU.
