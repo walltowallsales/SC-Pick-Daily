@@ -66,3 +66,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v13 fix: Changes the actual picker HTML label from `Qty on hand at this location after pick` to `QTY LEFT`.
 
 - v14: QTY LEFT verification checkbox now says only VERIFIED; location is larger; Quantity to Pick value is moved next to its label and emphasized with red text, border, and light background.
+
+- v15: Makes the location larger, strengthens the divider between photo and title, and changes Open SellerChamp Product to open the SellerChamp Products section searched by the current SKU instead of opening the product-info detail URL.

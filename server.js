@@ -181,7 +181,7 @@ function productFacts(product, item) {
     variantId: str(variant?.id),
     marketplaceUrl: str(product?.marketplace_url || product?.url || ''),
     marketplaceId: str(product?.marketplace_id || product?.ebay_item_id || ''),
-    sellerChampUrl: product?.id ? `https://app.sellerchamp.com/products/${encodeURIComponent(product.id)}` : '',
+    sellerChampUrl: sku ? `https://app.sellerchamp.com/products?search=${encodeURIComponent(sku)}` : 'https://app.sellerchamp.com/products',
     locations
   };
 }
