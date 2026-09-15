@@ -16,7 +16,11 @@
     <button id="createBtn" class="primary" disabled>Create Pick Batch</button>
     <p id="homeError" class="error"></p>
   </div>
-  <h2>Saved Pick Batches</h2><div id="batchList" class="batchList"></div>
+  <h2>Active Pick Batches</h2><div id="batchList" class="batchList"></div>
+  <details id="archiveSection" class="archiveSection">
+    <summary>Archived Pick Batches <span id="archiveCount"></span></summary>
+    <div id="archiveList" class="batchList archiveList"></div>
+  </details>
 </section>
 <section id="batchView" class="hidden">
   <div id="batchHead" class="card"></div>

@@ -80,3 +80,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v20: App-access PIN is remembered on this browser/device for 30 days using localStorage. Delete Batch no longer has a separate PIN requirement; the existing delete confirmation remains.
 
 - v21: In the opened batch item list, each SKU links to that item's SellerChamp Products search page in a new tab.
+
+- v22: Makes the location header high-visibility yellow; the final Finish action archives the batch automatically and returns home; Home now separates Active Pick Batches from a collapsible Archived Pick Batches section, where archived batches remain viewable.

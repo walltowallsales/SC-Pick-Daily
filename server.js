@@ -315,7 +315,7 @@ app.patch('/api/batches/:id', (req,res)=> {
   const db=readDb(); const b=db.batches.find(x=>x.id===req.params.id);
   if(!b) return res.status(404).json({error:'Batch not found'});
   if (req.body?.name !== undefined) b.name=str(req.body.name).trim() || b.name;
-  if (req.body?.status && ['not_started','in_progress','completed'].includes(req.body.status)) b.status=req.body.status;
+  if (req.body?.status && ['not_started','in_progress','completed','archived'].includes(req.body.status)) { b.status=req.body.status; if(req.body.status==='archived') b.archivedAt=nowIso(); }
   if (Number.isInteger(req.body?.currentIndex)) b.currentIndex=Math.max(0,Math.min(req.body.currentIndex, Math.max(0,b.lines.length-1)));
   writeDb(db); res.json({batch:summarize(b)});
 });

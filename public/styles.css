@@ -72,3 +72,10 @@
 #onHandVerifyWrap span{cursor:pointer}
 
 .skuProductLink{font-weight:850;text-decoration:underline;text-underline-offset:2px}.skuProductLink:focus{outline:2px solid currentColor;outline-offset:3px}
+
+/* v22: high-visibility location header + archive */
+.location{background:#ffd84d;color:#111827;border:3px solid #111827;letter-spacing:.02em}
+.archiveSection{margin-top:30px;margin-bottom:24px}
+.archiveSection summary{cursor:pointer;font-size:20px;font-weight:850;padding:14px 4px}
+.archiveList{margin-top:12px}
+.archiveList .batch{opacity:.88}
