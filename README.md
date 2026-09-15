@@ -76,3 +76,7 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v18: Fixes Create Pick Batch `sku is not defined` regression by using the in-scope `effectiveSku`. Also uses the user's exact working SellerChamp Products search URL structure and substitutes only the current SKU.
 
 - v19: Makes the QTY LEFT VERIFIED control a large touch target. The entire bordered VERIFIED area is tappable, with a 30px checkbox and selected-state highlight.
+
+- v20: App-access PIN is remembered on this browser/device for 30 days using localStorage. Delete Batch no longer has a separate PIN requirement; the existing delete confirmation remains.
+
+- v21: In the opened batch item list, each SKU links to that item's SellerChamp Products search page in a new tab.

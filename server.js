@@ -12,7 +12,6 @@ const BASE = (process.env.SELLERCHAMP_BASE_URL || 'https://app.sellerchamp.com')
 const TOKEN = process.env.SELLERCHAMP_TOKEN || '';
 const ORDER_STATUS = process.env.QUALIFYING_ORDER_STATUS || 'unshipped';
 const APP_PIN = process.env.APP_PIN || '';
-const DELETE_BATCH_PIN = process.env.DELETE_BATCH_PIN || '8880';
 const ORDER_LOOKBACK_DAYS = Math.max(1, Number(process.env.ORDER_LOOKBACK_DAYS || 30));
 const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(__dirname, 'data'));
 const DB_FILE = path.join(DATA_DIR, 'pick-batches.json');
@@ -382,8 +381,6 @@ app.post('/api/batches/:id/lines/:lineId/correct-inventory', async (req,res)=> {
 });
 
 app.delete('/api/batches/:id', (req,res)=> {
-  const deletePin = str(req.header('x-delete-pin') || req.body?.pin).trim();
-  if (deletePin !== DELETE_BATCH_PIN) return res.status(403).json({ error:'Incorrect delete PIN.' });
   const db=readDb(); const idx=db.batches.findIndex(x=>x.id===req.params.id);
   if(idx<0) return res.status(404).json({error:'Batch not found'});
   db.batches.splice(idx,1); writeDb(db); res.json({ok:true});

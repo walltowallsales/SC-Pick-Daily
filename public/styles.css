@@ -70,3 +70,5 @@
   background:#eef6ff;
 }
 #onHandVerifyWrap span{cursor:pointer}
+
+.skuProductLink{font-weight:850;text-decoration:underline;text-underline-offset:2px}.skuProductLink:focus{outline:2px solid currentColor;outline-offset:3px}
