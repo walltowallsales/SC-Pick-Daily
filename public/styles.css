@@ -32,3 +32,9 @@
 #pickTitle{border-top:5px solid #172033;margin-top:22px;padding-top:18px;font-size:1.12em}
 .facts span{font-size:1.05em}
 #pickOnHand{font-size:1.12em}
+
+/* v14 picker emphasis refinements */
+#pickLocation{font-size:1.32em}
+.qtyRow{justify-content:flex-start;gap:10px}
+#pickQty{font-size:34px;background:#fff0f0;color:#c40000;border:2px solid #c40000;border-radius:9px;padding:2px 10px;line-height:1.1}
+@media(max-width:600px){#pickLocation{font-size:1.38em}.qtyRow{gap:8px}}

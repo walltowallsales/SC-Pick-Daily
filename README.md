@@ -64,3 +64,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v12: Restores the prior image size, adds a border around the image and a thick divider before the title, renames the on-hand label to QTY LEFT, and slightly increases related picker font sizing.
 
 - v13 fix: Changes the actual picker HTML label from `Qty on hand at this location after pick` to `QTY LEFT`.
+
+- v14: QTY LEFT verification checkbox now says only VERIFIED; location is larger; Quantity to Pick value is moved next to its label and emphasized with red text, border, and light background.
