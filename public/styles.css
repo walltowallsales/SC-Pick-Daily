@@ -16,3 +16,15 @@
 .qtyAdjust{margin-top:12px;width:100%;padding:11px 14px;font-size:14px;font-weight:850;background:#172033;color:#fff;border:2px solid #172033;border-radius:10px;box-shadow:0 2px 5px #00000020}
 .qtyAdjust:hover{background:#26364e;border-color:#26364e}
 .qtyAdjust:active{transform:translateY(1px)}
+
+/* v11 picker visual refinements */
+#pickLocation{font-size:1.18em}
+.qtyRow{column-gap:6px}
+#pickQty{color:#d00000}
+.imageBox{margin-bottom:24px}
+#pickImage{max-width:360px;max-height:360px}
+#pickTitle{margin-top:8px}
+@media(max-width:600px){
+  #pickLocation{font-size:1.22em}
+  #pickImage{max-width:min(92vw,390px);max-height:390px}
+}

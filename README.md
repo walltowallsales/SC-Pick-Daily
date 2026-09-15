@@ -58,3 +58,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - Adds secondary buttons below Back/Next to open the eBay listing when SellerChamp provides a marketplace URL/ID and to open the SellerChamp product page. Extra spacing separates them from the picking navigation.
 
 - v10: Renames inventory correction to Adjust Quantity with stronger button styling; quantity-on-hand verification is shown/required only when on-hand is 1–3; condition display prefers the eBay condition and appends the item remarks description as `Condition - Remarks` when remarks are present.
+
+- v11: Enlarges the pick location and product image, tightens spacing between Quantity to Pick and its value, displays the pick quantity in red, and adds clearer vertical separation between the image and title.
