@@ -60,3 +60,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v10: Renames inventory correction to Adjust Quantity with stronger button styling; quantity-on-hand verification is shown/required only when on-hand is 1–3; condition display prefers the eBay condition and appends the item remarks description as `Condition - Remarks` when remarks are present.
 
 - v11: Enlarges the pick location and product image, tightens spacing between Quantity to Pick and its value, displays the pick quantity in red, and adds clearer vertical separation between the image and title.
+
+- v12: Restores the prior image size, adds a border around the image and a thick divider before the title, renames the on-hand label to QTY LEFT, and slightly increases related picker font sizing.

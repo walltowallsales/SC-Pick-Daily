@@ -22,9 +22,13 @@
 .qtyRow{column-gap:6px}
 #pickQty{color:#d00000}
 .imageBox{margin-bottom:24px}
-#pickImage{max-width:360px;max-height:360px}
 #pickTitle{margin-top:8px}
 @media(max-width:600px){
   #pickLocation{font-size:1.22em}
-  #pickImage{max-width:min(92vw,390px);max-height:390px}
 }
+
+/* v12 picker refinements */
+.imageBox{border:3px solid #172033;border-radius:10px;padding:8px;margin-bottom:0}
+#pickTitle{border-top:5px solid #172033;margin-top:22px;padding-top:18px;font-size:1.12em}
+.facts span{font-size:1.05em}
+#pickOnHand{font-size:1.12em}
