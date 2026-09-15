@@ -72,3 +72,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v16: Changes the base location font from 34px to 46px and sets the photo/title divider explicitly to 10px, removing conflicting later overrides.
 
 - v17: Corrects the SellerChamp Products button to use app2.sellerchamp.com and SellerChamp's actual `product[query]` search parameter, populated with the current SKU.
+
+- v18: Fixes Create Pick Batch `sku is not defined` regression by using the in-scope `effectiveSku`. Also uses the user's exact working SellerChamp Products search URL structure and substitutes only the current SKU.
