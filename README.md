@@ -84,3 +84,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v22: Makes the location header high-visibility yellow; the final Finish action archives the batch automatically and returns home; Home now separates Active Pick Batches from a collapsible Archived Pick Batches section, where archived batches remain viewable.
 
 - v23: Expands image resolution across matching variant images, product images, generic image fields, and order/listing image fields. The resolved URL remains stored in each frozen batch line at batch creation.
+
+- v24: Delete Batch is now a soft delete. Deleted batches move to a collapsible Recently Deleted section and can be restored. While deleted, their orders are eligible for future batches just as before; restoring returns the batch to its prior status.

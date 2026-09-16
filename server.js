@@ -300,7 +300,7 @@ app.get('/api/health', (req,res)=>res.json({ ok:true, sellerChampConfigured:!!TO
 app.get('/api/preview', async (req,res) => {
   try {
     const db = readDb();
-    const used = new Set(db.batches.flatMap(b => b.orderIds || []));
+    const used = new Set(db.batches.filter(b=>b.status!=='deleted').flatMap(b => b.orderIds || []));
     const orders = await fetchAllQualifyingOrders();
     const fresh = orders.filter(o => !used.has(str(o.id)));
     res.json({ qualifyingOrders: orders.length, newOrders: fresh.length, excludedAlreadyBatched: orders.length-fresh.length, totalUnits: fresh.reduce((s,o)=>s+(o.items||[]).reduce((x,i)=>x+n(i.quantity),0),0) });
@@ -311,7 +311,7 @@ app.post('/api/batches', async (req,res) => {
   try {
     productCache.clear();
     const db = readDb();
-    const used = new Set(db.batches.flatMap(b => b.orderIds || []));
+    const used = new Set(db.batches.filter(b=>b.status!=='deleted').flatMap(b => b.orderIds || []));
     const orders = (await fetchAllQualifyingOrders()).filter(o => !used.has(str(o.id)));
     if (!orders.length) return res.status(409).json({ error:'There are no new qualifying orders to add to a pick batch.' });
     const lines = await buildSnapshot(orders);
@@ -407,9 +407,17 @@ app.post('/api/batches/:id/lines/:lineId/correct-inventory', async (req,res)=> {
 });
 
 app.delete('/api/batches/:id', (req,res)=> {
-  const db=readDb(); const idx=db.batches.findIndex(x=>x.id===req.params.id);
-  if(idx<0) return res.status(404).json({error:'Batch not found'});
-  db.batches.splice(idx,1); writeDb(db); res.json({ok:true});
+  const db=readDb(); const b=db.batches.find(x=>x.id===req.params.id);
+  if(!b) return res.status(404).json({error:'Batch not found'});
+  b.statusBeforeDelete=b.status==='deleted'?(b.statusBeforeDelete||'not_started'):b.status;
+  b.status='deleted'; b.deletedAt=nowIso(); writeDb(db); res.json({ok:true});
+});
+app.post('/api/batches/:id/restore', (req,res)=> {
+  const db=readDb(); const b=db.batches.find(x=>x.id===req.params.id);
+  if(!b) return res.status(404).json({error:'Batch not found'});
+  if(b.status!=='deleted') return res.status(400).json({error:'Batch is not deleted'});
+  b.status=b.statusBeforeDelete||'not_started'; b.deletedAt=null; delete b.statusBeforeDelete;
+  writeDb(db); res.json({ok:true,batch:summarize(b)});
 });
 
 app.get('*', (req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
