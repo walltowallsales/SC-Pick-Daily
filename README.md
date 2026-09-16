@@ -82,3 +82,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v21: In the opened batch item list, each SKU links to that item's SellerChamp Products search page in a new tab.
 
 - v22: Makes the location header high-visibility yellow; the final Finish action archives the batch automatically and returns home; Home now separates Active Pick Batches from a collapsible Archived Pick Batches section, where archived batches remain viewable.
+
+- v23: Expands image resolution across matching variant images, product images, generic image fields, and order/listing image fields. The resolved URL remains stored in each frozen batch line at batch creation.

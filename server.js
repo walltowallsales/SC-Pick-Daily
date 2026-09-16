@@ -123,14 +123,40 @@ async function lookupProduct(order, item) {
   return product;
 }
 
-function firstImage(product, effectiveSku) {
-  if (!product) return '';
-  const variant = (product.variants || []).find(v => v.sku === effectiveSku);
-  const vi = variant?.images?.[0]?.product_image;
-  if (vi) return vi.large_image_url || vi.medium_image_url || vi.original_image_url || '';
-  const pi = product.product_images?.[0];
-  if (pi) return pi.large_image_url || pi.medium_image_url || pi.original_image_url || pi.small_image_url || '';
-  if (Array.isArray(product.image_urls) && product.image_urls[0]) return product.image_urls[0];
+function imageUrlFrom(value) {
+  if (!value) return '';
+  if (typeof value === 'string') return /^https?:\/\//i.test(value) ? value : '';
+  if (typeof value !== 'object') return '';
+  const direct = [
+    value.large_image_url, value.medium_image_url, value.original_image_url,
+    value.small_image_url, value.image_url, value.url, value.src,
+    value.picture_url, value.pictureUrl, value.gallery_url, value.galleryURL,
+    value.thumbnail_url, value.thumbnail
+  ];
+  for (const v of direct) if (typeof v === 'string' && /^https?:\/\//i.test(v)) return v;
+  if (value.product_image) {
+    const u=imageUrlFrom(value.product_image); if(u) return u;
+  }
+  return '';
+}
+
+function firstImage(product, effectiveSku, item={}) {
+  const variant = product?.variants?.find(v => str(v.sku).trim() === effectiveSku);
+  const candidates = [
+    ...(variant?.images || []),
+    variant?.image, variant?.main_image, variant?.primary_image,
+    ...(variant?.product_images || []),
+    ...(product?.product_images || []),
+    ...(product?.images || []),
+    product?.image, product?.main_image, product?.primary_image,
+    ...(Array.isArray(product?.image_urls) ? product.image_urls : []),
+    item?.image, item?.image_url, item?.picture_url, item?.gallery_url,
+    ...(Array.isArray(item?.images) ? item.images : []),
+    ...(Array.isArray(item?.image_urls) ? item.image_urls : [])
+  ];
+  for (const candidate of candidates) {
+    const u=imageUrlFrom(candidate); if(u) return u;
+  }
   return '';
 }
 
@@ -175,7 +201,7 @@ function productFacts(product, item) {
       return remarks ? `${ebayCondition} - ${remarks}` : ebayCondition;
     })(),
     qtyOnHand: n(variant?.quantity_available ?? product?.quantity_available),
-    image: firstImage(product, effectiveSku),
+    image: firstImage(product, effectiveSku, item),
     productId: str(product?.id),
     variantId: str(variant?.id),
     marketplaceUrl: str(product?.marketplace_url || product?.url || ''),
