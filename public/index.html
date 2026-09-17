@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+<div class="versionBadge">Version 26</div>
 <header><div><h1>Pick Batches</h1><p>Frozen SellerChamp picking sessions</p></div><button id="homeBtn" class="ghost hidden">Home</button></header>
 <main>
 <section id="pinView" class="card hidden"><h2>Enter PIN</h2><input id="pinInput" inputmode="numeric" type="password" placeholder="PIN"><button id="pinBtn">Unlock</button><p id="pinErr" class="error"></p></section>
@@ -40,6 +41,7 @@
     <div class="skuProminent"><span class="skuLabel">SKU</span><strong id="pickSku"></strong></div>
     <div class="imageBox"><img id="pickImage" alt="Item photo"><div id="noImage">No image available</div></div>
     <h2 id="pickTitle"></h2>
+    <a id="pickerSellerChampBtn" class="pickerSellerChampBtn hidden" target="_blank" rel="noopener noreferrer">SellerChamp</a>
     <div id="orderBox" class="orders spreadOrders"></div>
     <div class="facts"><div><span>Condition</span><strong id="pickCondition"></strong></div><div class="onHandFact"><span>QTY LEFT</span><strong id="pickOnHand"></strong><label id="onHandVerifyWrap" class="inlineVerify"><input id="confirmOnHand" type="checkbox"> <span id="onHandLabel">Verified</span></label><button id="correctQtyBtn" class="qtyAdjust" type="button">Adjust Quantity</button><div id="correctionPanel" class="correctionPanel hidden"><label for="actualQty">Actual quantity on hand</label><div class="correctionRow"><input id="actualQty" inputmode="numeric" type="number" min="0" step="1"><button id="updateQtyBtn" class="primary" type="button">Update SellerChamp</button></div><div id="correctionMsg" class="correctionMsg"></div></div></div></div>
   </div>

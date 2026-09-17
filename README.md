@@ -88,3 +88,5 @@ If the quantity on hand at the current location is wrong, tap **Quantity is inco
 - v24: Delete Batch is now a soft delete. Deleted batches move to a collapsible Recently Deleted section and can be restored. While deleted, their orders are eligible for future batches just as before; restoring returns the batch to its prior status.
 
 - v25: Adds a small Ebay Orders button in Create Pick Batch opening eBay Awaiting Shipment in a new tab; makes the SKU in the Dynamic Pick Guide link to the SellerChamp Products search for that SKU; replaces Spread across N orders with one QTY / Order# line per order allocation.
+
+- v26: Shows Version 26 at the top; replaces the clickable Dynamic Pick Guide SKU with a small light-green SellerChamp button between title and order details; batch item-list Orders column now shows the same QTY / Order# breakdown as the Dynamic Pick Guide.
